@@ -1,15 +1,73 @@
 import { pipe } from "./assets/pipe.js";
-
-const PIXEL_ARTS = { pipe, };
+import { playbtn } from "./assets/playbtn.js";
+const PIXEL_ARTS = { pipe, playbtn };
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 const width = 600;
 const height = 600;
+const maxWidth = window.innerWidth;
+const maxHeight = window.innerHeight;
 
 canvas.width = width;
 canvas.height = height;
+
+const render = (props, pixelArt, colorSet) => {
+    for (let row = 0; row < pixelArt.length; row++) {
+        for (let col = 0; col < pixelArt[row].length; col++) {
+            const {x, y, size} = props;
+            const character =  pixelArt[row][col];
+            if (character !== " ") {
+                ctx.fillStyle = colorSet[character];
+                ctx.fillRect(x + (col * size), y + (row  * size), size, size);
+            }
+        }
+    }
+}
+
+class Button {
+    constructor(x, y, w, h, r, color, hoverColor, art) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+        this.r = r;
+        this.color = color;
+        this.hoverColor = hoverColor;
+        this.art = art;
+    }
+
+    render() {
+        const { x, y, w, h, r, color, hoverColor, art } = this;
+
+        canvas.addEventListener("mousemove", function(event) {
+            const ex = event.clientX - ((maxWidth / 2) - 300); 
+            const ey = event.clientY - ((maxHeight / 2) - 300); 
+
+            ctx.fillStyle = color;
+            if (ex >= x && ex <= x + w &&
+                ey >= y && ey <= y + h) {
+                ctx.fillStyle = hoverColor;
+            }
+            
+            ctx.lineWidth = 2.5;
+            ctx.strokeStyle = "#292D32";
+            ctx.beginPath();
+            ctx.roundRect(x, y, w, h, r);
+            ctx.fill();
+            ctx.stroke();
+            render({x: 165, y: 255, size: 2}, PIXEL_ARTS[art][0], PIXEL_ARTS[art][1]);
+            
+
+        });
+
+    }
+}
+
+const PLAYBTN = new Button(100, 220, 185, 140, 5, "#FAFDF5", "#D1D3CD", 'playbtn') 
+const SHOPBTN = new Button(205, 375, 185, 145, 5, "#FAFDF5", "#D1D3CD", 'playbtn') 
+const HIGHSCOREBTN = new Button(320, 220, 185, 140, 5, "#FAFDF5", "#D1D3CD", 'playbtn') 
 
 function menu() {
     //Clear the Canvas
@@ -39,32 +97,22 @@ function menu() {
     ctx.fillStyle = "#92E549";
     ctx.fillText("BIRD", 30, 210);
     
-    //Draw the 3 rectangles for Play, Shop and Leaderboard
-    ctx.lineWidth = 2.5;
-    ctx.fillStyle = "#FAFDF5";
-    ctx.beginPath();
-    ctx.roundRect(100, 220, 185, 140, 5);
-    ctx.roundRect(320, 220, 185, 140, 5);
-    ctx.roundRect(205, 375, 185, 145, 5);
-    ctx.fill();
-    ctx.stroke();
+    //Made by 21262
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#3F3F2F";
+    ctx.font = "0.75rem 'Press Start 2P', system-ui";
+    ctx.fillText("MADE BY 21262", 300, 580);
+
+    PLAYBTN.render();
+    HIGHSCOREBTN.render();
+    SHOPBTN.render();
+
+    render({x: 500, y: 0, size: 2}, PIXEL_ARTS.pipe[0], PIXEL_ARTS.pipe[1]);
+    render({x: -10, y: 350, size: 2}, PIXEL_ARTS.pipe[0].reverse(), PIXEL_ARTS.pipe[1]);
+    
+    render({x: 165, y: 255, size: 2}, PIXEL_ARTS.playbtn[0], PIXEL_ARTS.playbtn[1]);
+
 }
 
-const renderAsset = (props, pixelArt, colorSet) => {
-    for (let row = 0; row < pixelArt.length; row++) {
-        for (let col = 0; col < pixelArt[row].length; col++) {
-            const {x, y, size} = props;
-            const character =  pixelArt[row][col];
-            if (character !== " ") {
-                ctx.fillStyle = colorSet[character];
-                ctx.fillRect(x + (col * size), y + (row  * size), size, size);
-            }
-        }
-    }
-    //First the array --> Find the first string in array ->  first character in the string -> x = 0 y = 0 size = 10
-    //First the arra --> Find the first string in array -> second character in the string -> x = 0, y = 10
-}
 
 menu();
-renderAsset({x: 500, y: 0, size: 2}, PIXEL_ARTS.pipe[0], PIXEL_ARTS.pipe[1]);
-renderAsset({x: -10, y: 350, size: 2}, PIXEL_ARTS.pipe[0].reverse(), PIXEL_ARTS.pipe[1]);
