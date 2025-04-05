@@ -1,6 +1,8 @@
 import { pipe } from "./assets/pipe.js";
 import { playbtn } from "./assets/playbtn.js";
-const PIXEL_ARTS = { pipe, playbtn };
+import { shopbtn} from "./assets/shopbtn.js"
+import { leaderboardbtn } from "./assets/leaderboardbtn.js";
+const PIXEL_ARTS = { pipe, playbtn, leaderboardbtn, shopbtn };
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
@@ -26,6 +28,7 @@ const render = (props, pixelArt, colorSet) => {
     }
 }
 
+
 class Button {
     constructor(x, y, w, h, r, color, hoverColor, art) {
         this.x = x;
@@ -50,24 +53,31 @@ class Button {
                 ey >= y && ey <= y + h) {
                 ctx.fillStyle = hoverColor;
             }
-            
+            console.log(typeof art);
             ctx.lineWidth = 2.5;
             ctx.strokeStyle = "#292D32";
             ctx.beginPath();
             ctx.roundRect(x, y, w, h, r);
             ctx.fill();
             ctx.stroke();
-            render({x: 165, y: 255, size: 2}, PIXEL_ARTS[art][0], PIXEL_ARTS[art][1]);
-            
-
+            render({x: art.x, y: art.y, size: art.size}, art.art, art.colorSet);
         });
 
     }
 }
 
-const PLAYBTN = new Button(100, 220, 185, 140, 5, "#FAFDF5", "#D1D3CD", 'playbtn') 
-const SHOPBTN = new Button(205, 375, 185, 145, 5, "#FAFDF5", "#D1D3CD", 'playbtn') 
-const HIGHSCOREBTN = new Button(320, 220, 185, 140, 5, "#FAFDF5", "#D1D3CD", 'playbtn') 
+const PLAYBTN = new Button(
+    100, 220, 185, 140, 5,
+    "#FAFDF5", "#D1D3CD", 
+    {x: 165, y: 255, size: 2, art: PIXEL_ARTS.playbtn[0], colorSet: PIXEL_ARTS.playbtn[1]}) 
+const SHOPBTN = new Button(
+    205, 375, 185, 145, 5,
+    "#FAFDF5", "#D1D3CD",
+    {x: 265, y: 410, size: 2, art: PIXEL_ARTS.shopbtn[0], colorSet: PIXEL_ARTS.shopbtn[1]});
+const HIGHSCOREBTN = new Button(
+    320, 220, 185, 140, 5,
+    "#FAFDF5", "#D1D3CD",
+    {x: 370, y: 255, size: 2, art: PIXEL_ARTS.leaderboardbtn[0], colorSet: PIXEL_ARTS.leaderboardbtn[1]}); 
 
 function menu() {
     //Clear the Canvas
@@ -97,6 +107,7 @@ function menu() {
     ctx.fillStyle = "#92E549";
     ctx.fillText("BIRD", 30, 210);
     
+    
     //Made by 21262
     ctx.textAlign = "center";
     ctx.fillStyle = "#3F3F2F";
@@ -109,10 +120,6 @@ function menu() {
 
     render({x: 500, y: 0, size: 2}, PIXEL_ARTS.pipe[0], PIXEL_ARTS.pipe[1]);
     render({x: -10, y: 350, size: 2}, PIXEL_ARTS.pipe[0].reverse(), PIXEL_ARTS.pipe[1]);
-    
-    render({x: 165, y: 255, size: 2}, PIXEL_ARTS.playbtn[0], PIXEL_ARTS.playbtn[1]);
 
 }
-
-
 menu();
