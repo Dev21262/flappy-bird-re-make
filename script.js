@@ -47,13 +47,21 @@ class Button {
         canvas.addEventListener("mousemove", function(event) {
             const ex = event.clientX - ((maxWidth / 2) - 300); 
             const ey = event.clientY - ((maxHeight / 2) - 300); 
-
+            
             ctx.fillStyle = color;
             if (ex >= x && ex <= x + w &&
                 ey >= y && ey <= y + h) {
                 ctx.fillStyle = hoverColor;
+                const stylus = document.createElement("style");
+
+                document.head.appendChild(stylus);
+                stylus.sheet.insertRule("body {cursor: pointer;}")
+            } else {
+                const stylus = document.createElement("style");
+
+                document.head.appendChild(stylus);
+                stylus.sheet.insertRule("body {cursor: pointer;}")
             }
-            console.log(typeof art);
             ctx.lineWidth = 2.5;
             ctx.strokeStyle = "#292D32";
             ctx.beginPath();
@@ -80,12 +88,20 @@ const HIGHSCOREBTN = new Button(
     {x: 370, y: 255, size: 2, art: PIXEL_ARTS.leaderboardbtn[0], colorSet: PIXEL_ARTS.leaderboardbtn[1]}); 
 
 function menu() {
-    //Clear the Canvas
     ctx.clearRect(0, 0, width, height);
 
-    //Draw The Sky 
-    ctx.fillStyle = "#4DC2C6";
+    const gradient = ctx.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, "#46D2F6");
+    gradient.addColorStop(0.25, "#9FE6F9");
+    gradient.addColorStop(0.55, "#7AE3F8");
+    gradient.addColorStop(0.75, "#7AE3F8");
+
+    gradient.addColorStop(1, "#59DAF7");
+    
+    // Set the fill style and draw a rectangle
+    ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
+
     //Draw the bottom most yellow ground
     ctx.fillStyle = "#EFEDB0";
     ctx.fillRect(0, height - (height / 10), width, height / 10);
@@ -120,6 +136,7 @@ function menu() {
 
     render({x: 500, y: 0, size: 2}, PIXEL_ARTS.pipe[0], PIXEL_ARTS.pipe[1]);
     render({x: -10, y: 350, size: 2}, PIXEL_ARTS.pipe[0].reverse(), PIXEL_ARTS.pipe[1]);
-
 }
+
+
 menu();
