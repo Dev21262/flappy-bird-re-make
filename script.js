@@ -2,18 +2,27 @@ import { pipe } from "./assets/pipe.js";
 import { playbtn } from "./assets/playbtn.js";
 import { shopbtn} from "./assets/shopbtn.js"
 import { leaderboardbtn } from "./assets/leaderboardbtn.js";
-const PIXEL_ARTS = { pipe, playbtn, leaderboardbtn, shopbtn };
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
+const fps = 60;
 const width = 600;
 const height = 600;
 const maxWidth = window.innerWidth;
 const maxHeight = window.innerHeight;
 
+
 canvas.width = width;
 canvas.height = height;
+
+const reverseArr = (array) => {
+    let newArray = [];
+    for (let value of array) {newArray.unshift(value);}
+    return newArray;
+};
+const PIXEL_ARTS = { pipe, playbtn, leaderboardbtn, shopbtn };
+PIXEL_ARTS.pipeReverse = reverseArr(PIXEL_ARTS.pipe[0]);
 
 const render = (props, pixelArt, colorSet) => {
     for (let row = 0; row < pixelArt.length; row++) {
@@ -22,12 +31,16 @@ const render = (props, pixelArt, colorSet) => {
             const character =  pixelArt[row][col];
             if (character !== " ") {
                 ctx.fillStyle = colorSet[character];
-                ctx.fillRect(x + (col * size), y + (row  * size), size, size);
+                ctx.fillRect(
+                    Math.floor(x + col * size),
+                    Math.floor(y + row * size),
+                    size,
+                    size
+                );
             }
         }
     }
 }
-
 
 class Button {
     constructor(x, y, w, h, r, color, hoverColor, art) {
@@ -52,15 +65,9 @@ class Button {
             if (ex >= x && ex <= x + w &&
                 ey >= y && ey <= y + h) {
                 ctx.fillStyle = hoverColor;
-                const stylus = document.createElement("style");
-
-                document.head.appendChild(stylus);
-                stylus.sheet.insertRule("body {cursor: pointer;}")
+                canvas.style.cursor = "pointer";
             } else {
-                const stylus = document.createElement("style");
-
-                document.head.appendChild(stylus);
-                stylus.sheet.insertRule("body {cursor: pointer;}")
+                canvas.style.cursor = "auto";
             }
             ctx.lineWidth = 2.5;
             ctx.strokeStyle = "#292D32";
@@ -95,7 +102,6 @@ function menu() {
     gradient.addColorStop(0.25, "#9FE6F9");
     gradient.addColorStop(0.55, "#7AE3F8");
     gradient.addColorStop(0.75, "#7AE3F8");
-
     gradient.addColorStop(1, "#59DAF7");
     
     // Set the fill style and draw a rectangle
@@ -135,8 +141,64 @@ function menu() {
     SHOPBTN.render();
 
     render({x: 500, y: 0, size: 2}, PIXEL_ARTS.pipe[0], PIXEL_ARTS.pipe[1]);
-    render({x: -10, y: 350, size: 2}, PIXEL_ARTS.pipe[0].reverse(), PIXEL_ARTS.pipe[1]);
+    render({x: -10, y: 350, size: 2}, PIXEL_ARTS.pipeReverse, PIXEL_ARTS.pipe[1]);
+}
+let upperRandY = [0,  -50, -70, - 100, -1 * (Math.random() * 70), -1 * (Math.random() * 100)];
+let lowerRandY = [370 , 400, 420, 450];
+let upperPipesArr = [];
+let lowerPipesArr = [];
+
+window.setInterval(() => {
+    upperPipesArr.push({
+        x: 600,
+        y: upperRandY[Math.round(Math.random() * (upperRandY.length - 1))]
+    });
+    lowerPipesArr.push({
+        x: 600,
+        y: lowerRandY[Math.round(Math.random() * (lowerRandY.length - 1))]
+    });
+
+}, 2500)
+
+
+function play() {    
+    ctx.clearRect(0, 0, width, height);
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, height);
+    gradient.addColorStop(0, "#4AC7D1");
+    gradient.addColorStop(0.25, "#5FC4CC");
+    gradient.addColorStop(0.55, "#77C8CE");
+    gradient.addColorStop(0.75, "#5FC4CC");
+    gradient.addColorStop(1, "#4AC7D1");
+    
+    // Set the fill style and draw a rectangle
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+    
+    
+    ctx.fillStyle = "#FFF135";
+    ctx.fillRect(50, 100, 50, 50);
+
+
+    for (let obj of upperPipesArr) {
+        obj.x -= 1.5;
+        render({x: obj.x, y: obj.y, size: 2}, PIXEL_ARTS.pipe[0], PIXEL_ARTS.pipe[1]);
+    }
+
+    for (let obj of lowerPipesArr) {
+        obj.x -= 1.5;
+        render({x: obj.x, y: obj.y, size: 2}, PIXEL_ARTS.pipeReverse, PIXEL_ARTS.pipe[1]);
+        
+    }
+
+    console.log(upperPipesArr.length);
+
+    upperPipesArr = upperPipesArr.filter(obj => obj.x > 150);
+    lowerPipesArr = lowerPipesArr.filter(obj => obj.x > 150);
+
+    requestAnimationFrame(play);
 }
 
+play();
 
-menu();
+// menu();
