@@ -2,13 +2,17 @@ import { pipe } from "./assets/pipe.js";
 import { playbtn } from "./assets/playbtn.js";
 import { shopbtn} from "./assets/shopbtn.js"
 import { leaderboardbtn } from "./assets/leaderboardbtn.js";
+import { grayWolf } from "./assets/grayWolf.js";
+import { flappy } from "./assets/flappy.js";
 
 const canvas = document.getElementById("canvas");
 
 
 const ctx = canvas.getContext("2d");
 
-const fps = 60;
+const FPS = 60;
+const GRAVITY = 2;
+
 const width = 600;
 const height = 600;
 const maxWidth = window.innerWidth;
@@ -26,9 +30,8 @@ const reverseArr = (array) => {
 
 };
 
-const PIXEL_ARTS = { pipe, playbtn, leaderboardbtn, shopbtn };
+const PIXEL_ARTS = { pipe, playbtn, leaderboardbtn, shopbtn, grayWolf, flappy };
 PIXEL_ARTS.pipeReverse = reverseArr(PIXEL_ARTS.pipe[0]);
-console.log(PIXEL_ARTS.pipeReverse == PIXEL_ARTS.pipe);
 
 const spriteCache = {};
 
@@ -52,8 +55,7 @@ function cacheSprite(name, pixelArt, colorSet, size = 2) {
             if (character !== " " && character !== undefined) {
                 shadowCtx.fillStyle = colorSet[character];
                 shadowCtx.fillRect(col * size, row * size, size, size);
-            } else {
-            }
+            } 
         }
     }
     
@@ -62,6 +64,8 @@ function cacheSprite(name, pixelArt, colorSet, size = 2) {
 
 cacheSprite("pipeUpper", PIXEL_ARTS.pipe[0], PIXEL_ARTS.pipe[1]);
 cacheSprite("pipeLower", PIXEL_ARTS.pipeReverse, PIXEL_ARTS.pipe[1]);
+cacheSprite("grayWolf", PIXEL_ARTS.grayWolf[0], PIXEL_ARTS.grayWolf[1], 3);
+cacheSprite("flappy", PIXEL_ARTS.flappy[0], PIXEL_ARTS.flappy[1], 3);
 
 const render = (props, pixelArt, colorSet) => {
     for (let row = 0; row < pixelArt.length; row++) {
@@ -76,7 +80,38 @@ const render = (props, pixelArt, colorSet) => {
     }
 }
 const cachedRender = (props, spriteName) => ctx.drawImage(spriteCache[spriteName], props.x, props.y)
+const bird = {
+    x: 25,
+    y: 200,
+    velocity: 0,
+    rotTheta: 0,
+    eventAdded: false,
+    render: function () {
+        this.y += this.velocity * 1 + 1/2 * GRAVITY;
+        // this.rotTheta += 0.1;
+        
+        if (this.eventAdded !== true) {
+            window.addEventListener("keydown", (e) => {
+                if (e.key === " ") {
+                   const interval =  window.setInterval(() => {
+                        this.y -= 1.5;
+                   }, 1 / 1200)
+                   window.setTimeout(() => window.clearInterval(interval), 250);
+                   this.rotTheta = 0;
+                }
+            });
+            this.eventAdded = true;
+        }
+        
+        ctx.save(); 
 
+        ctx.beginPath();
+        ctx.translate(this.x, this.y); 
+        ctx.rotate(this.rotTheta * (Math.PI / 180));
+        cachedRender({ x: this.x, y: this.y }, 'flappy');
+        ctx.restore(); 
+    }
+}
 
 class Button {
     constructor(x, y, w, h, r, color, hoverColor, art) {
@@ -176,8 +211,8 @@ function menu() {
     HIGHSCOREBTN.render();
     SHOPBTN.render();
 
-    cachedRender({x: 500, y: 0, size: 2}, PIXEL_ARTS.pipe[0], PIXEL_ARTS.pipe[1]);
-    cachedRender({x: -10, y: 350, size: 2}, PIXEL_ARTS.pipe[0].reverse(), PIXEL_ARTS.pipe[1]);
+    render({x: 500, y: 0, size: 2}, PIXEL_ARTS.pipe[0], PIXEL_ARTS.pipe[1]);
+    render({x: -10, y: 306, size: 2}, PIXEL_ARTS.pipe[0].reverse(), PIXEL_ARTS.pipe[1]);
  }
 
 let upperRandY = [0, -50, -70, -100, -1 * (Math.random() * 70), -1 * (Math.random() * 100)];
@@ -185,10 +220,14 @@ let lowerRandY = [370, 400, 420, 450];
 let upperPipesArr = [];
 let lowerPipesArr = [];
 
-window.setInterval(() => {
-    upperPipesArr.push({ x: 600, y: upperRandY[Math.round(Math.random() * (upperRandY.length - 1))] });
-    lowerPipesArr.push({ x: 600, y: lowerRandY[Math.round(Math.random() * (lowerRandY.length - 1))] });
-}, 1250);
+function add_pipes() {
+    window.setInterval(() => {
+        upperPipesArr.push({ x: 600, y: upperRandY[Math.round(Math.random() * (upperRandY.length - 1))] });
+        lowerPipesArr.push({ x: 600, y: lowerRandY[Math.round(Math.random() * (lowerRandY.length - 1))] });
+    }, 1250);
+}
+
+add_pipes();
 
 function play() {    
     ctx.clearRect(0, 0, width, height);
@@ -203,16 +242,18 @@ function play() {
 
     for (let obj of upperPipesArr) {
         obj.x -= 2.5;
-        cachedRender({ x: obj.x, y: obj.y }, 'pipeUpper', PIXEL_ARTS.pipe[1]);
+        cachedRender({ x: obj.x, y: obj.y }, 'pipeUpper');
     }
     for (let obj of lowerPipesArr) {
         obj.x -= 2.5;
-        cachedRender({ x: obj.x, y: obj.y }, 'pipeLower', PIXEL_ARTS.pipe[1]);
+        cachedRender({ x: obj.x, y: obj.y }, 'pipeLower');
     }
 
     upperPipesArr = upperPipesArr.filter(obj => obj.x > -50);
     lowerPipesArr = lowerPipesArr.filter(obj => obj.x > -50);
 
+
+    bird.render();
     requestAnimationFrame(play);
 }
 
