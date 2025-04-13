@@ -4,6 +4,7 @@ import { shopbtn} from "./assets/shopbtn.js"
 import { leaderboardbtn } from "./assets/leaderboardbtn.js";
 import { grayWolf } from "./assets/grayWolf.js";
 import { flappy } from "./assets/flappy.js";
+import { bg } from "./assets/bg.js";
 
 const canvas = document.getElementById("canvas");
 
@@ -11,7 +12,7 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 const FPS = 60;
-const GRAVITY = 2;
+const GRAVITY = 10;
 
 const width = 600;
 const height = 600;
@@ -30,7 +31,7 @@ const reverseArr = (array) => {
 
 };
 
-const PIXEL_ARTS = { pipe, playbtn, leaderboardbtn, shopbtn, grayWolf, flappy };
+const PIXEL_ARTS = { pipe, playbtn, leaderboardbtn, shopbtn, grayWolf, flappy, bg };
 PIXEL_ARTS.pipeReverse = reverseArr(PIXEL_ARTS.pipe[0]);
 
 const spriteCache = {};
@@ -66,6 +67,7 @@ cacheSprite("pipeUpper", PIXEL_ARTS.pipe[0], PIXEL_ARTS.pipe[1]);
 cacheSprite("pipeLower", PIXEL_ARTS.pipeReverse, PIXEL_ARTS.pipe[1]);
 cacheSprite("grayWolf", PIXEL_ARTS.grayWolf[0], PIXEL_ARTS.grayWolf[1], 3);
 cacheSprite("flappy", PIXEL_ARTS.flappy[0], PIXEL_ARTS.flappy[1], 3);
+cacheSprite("bg", PIXEL_ARTS.bg[0], PIXEL_ARTS.bg[1], 13);
 
 const render = (props, pixelArt, colorSet) => {
     for (let row = 0; row < pixelArt.length; row++) {
@@ -75,6 +77,7 @@ const render = (props, pixelArt, colorSet) => {
             if (character !== " ") {
                 ctx.fillStyle = colorSet[character];
                 ctx.fillRect(x + (col * size), y + (row  * size), size, size);
+
             }
         }
     }
@@ -87,16 +90,15 @@ const bird = {
     rotTheta: 0,
     eventAdded: false,
     render: function () {
-        this.y += this.velocity * 1 + 1/2 * GRAVITY;
+        this.velocity = this.velocity + (GRAVITY * 1 / FPS);
+        this.y += (this.velocity * (1 / FPS)) + 1/2 * GRAVITY * (1 / FPS);
         // this.rotTheta += 0.1;
         
         if (this.eventAdded !== true) {
             window.addEventListener("keydown", (e) => {
                 if (e.key === " ") {
-                   const interval =  window.setInterval(() => {
-                        this.y -= 1.5;
-                   }, 1 / 1200)
-                   window.setTimeout(() => window.clearInterval(interval), 250);
+                   this.velocity = this.velocity - (GRAVITY * 1 / FPS);
+                   this.y -= (this.velocity * (1 / FPS)) - 1/2 * GRAVITY * (1 / FPS);;
                    this.rotTheta = 0;
                 }
             });
@@ -232,13 +234,15 @@ add_pipes();
 function play() {    
     ctx.clearRect(0, 0, width, height);
 
-    const gradient = ctx.createLinearGradient(0, 0, 0, height);
-    gradient.addColorStop(0, "#61DCF4");
-    gradient.addColorStop(0.25, "#91DEF2");
-    gradient.addColorStop(0.55, "#61DCF4");
-    gradient.addColorStop(0.75, "#61DCF4");
-    ctx.fillStyle = gradient;
+    // const gradient = ctx.createLinearGradient(0, 0, 0, height);
+    // gradient.addColorStop(0, "#61DCF4");
+    // gradient.addColorStop(0.25, "#91DEF2");
+    // gradient.addColorStop(0.55, "#61DCF4");
+    // gradient.addColorStop(0.75, "#61DCF4");
+    // ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
+    cachedRender({ x: 0, y: 0 }, 'bg');
+
 
     for (let obj of upperPipesArr) {
         obj.x -= 2.5;
