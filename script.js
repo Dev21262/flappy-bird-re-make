@@ -12,7 +12,7 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 const FPS = 60;
-const GRAVITY = 10;
+const GRAVITY = 200;
 
 const width = 600;
 const height = 600;
@@ -84,34 +84,25 @@ const render = (props, pixelArt, colorSet) => {
 }
 const cachedRender = (props, spriteName) => ctx.drawImage(spriteCache[spriteName], props.x, props.y)
 const bird = {
-    x: 25,
-    y: 200,
-    velocity: 0,
+    x: 50,
+    y: 10,
     rotTheta: 0,
+    velocity: 10,
     eventAdded: false,
     render: function () {
-        this.velocity = this.velocity + (GRAVITY * 1 / FPS);
-        this.y += (this.velocity * (1 / FPS)) + 1/2 * GRAVITY * (1 / FPS);
-        // this.rotTheta += 0.1;
+        this.velocity = this.velocity + (GRAVITY * (2 / FPS));
+        this.y += (this.velocity * (2 / FPS)) + (0.5 * GRAVITY * (2 / FPS)**2);
         
         if (this.eventAdded !== true) {
             window.addEventListener("keydown", (e) => {
                 if (e.key === " ") {
-                   this.velocity = this.velocity - (GRAVITY * 1 / FPS);
-                   this.y -= (this.velocity * (1 / FPS)) - 1/2 * GRAVITY * (1 / FPS);;
-                   this.rotTheta = 0;
+                    this.velocity = -200;
                 }
             });
             this.eventAdded = true;
         }
         
-        ctx.save(); 
-
-        ctx.beginPath();
-        ctx.translate(this.x, this.y); 
-        ctx.rotate(this.rotTheta * (Math.PI / 180));
         cachedRender({ x: this.x, y: this.y }, 'flappy');
-        ctx.restore(); 
     }
 }
 
@@ -217,8 +208,8 @@ function menu() {
     render({x: -10, y: 306, size: 2}, PIXEL_ARTS.pipe[0].reverse(), PIXEL_ARTS.pipe[1]);
  }
 
-let upperRandY = [0, -50, -70, -100, -1 * (Math.random() * 70), -1 * (Math.random() * 100)];
-let lowerRandY = [370, 400, 420, 450];
+let upperRandY = [0, -50, -70, -100, -1 * (Math.random() * 30), -1 * (Math.random() * 50)];
+let lowerRandY = [370, 400, 420, 450, (370 + (Math.random() * 30)), (370 + (Math.random() * 50))];
 let upperPipesArr = [];
 let lowerPipesArr = [];
 
@@ -226,7 +217,7 @@ function add_pipes() {
     window.setInterval(() => {
         upperPipesArr.push({ x: 600, y: upperRandY[Math.round(Math.random() * (upperRandY.length - 1))] });
         lowerPipesArr.push({ x: 600, y: lowerRandY[Math.round(Math.random() * (lowerRandY.length - 1))] });
-    }, 1250);
+    }, 1000);
 }
 
 add_pipes();
@@ -244,12 +235,13 @@ function play() {
     cachedRender({ x: 0, y: 0 }, 'bg');
 
 
+    bird.render();
     for (let obj of upperPipesArr) {
-        obj.x -= 2.5;
+        obj.x -= 5;
         cachedRender({ x: obj.x, y: obj.y }, 'pipeUpper');
     }
     for (let obj of lowerPipesArr) {
-        obj.x -= 2.5;
+        obj.x -= 5;
         cachedRender({ x: obj.x, y: obj.y }, 'pipeLower');
     }
 
@@ -257,7 +249,6 @@ function play() {
     lowerPipesArr = lowerPipesArr.filter(obj => obj.x > -50);
 
 
-    bird.render();
     requestAnimationFrame(play);
 }
 
