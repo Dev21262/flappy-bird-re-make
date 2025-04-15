@@ -12,7 +12,7 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 const FPS = 60;
-const GRAVITY = 200;
+const GRAVITY = 220;
 
 const width = 600;
 const height = 600;
@@ -31,12 +31,8 @@ const reverseArr = (array) => {
 
 };
 
-const PIXEL_ARTS = { pipe, playbtn, leaderboardbtn, shopbtn, grayWolf, flappy, bg };
-PIXEL_ARTS.pipeReverse = reverseArr(PIXEL_ARTS.pipe[0]);
 
-const spriteCache = {};
-
-function cacheSprite(name, pixelArt, colorSet, size = 2) {
+function prerender(name, pixelArt, colorSet, size = 2) {
     const shadowCanvas = document.createElement('canvas');
     const shadowCtx = shadowCanvas.getContext('2d');
 
@@ -60,14 +56,24 @@ function cacheSprite(name, pixelArt, colorSet, size = 2) {
         }
     }
     
-    spriteCache[name] = shadowCanvas; 
+    cachedPIXEL_ARTS[name] = shadowCanvas; 
 }
 
-cacheSprite("pipeUpper", PIXEL_ARTS.pipe[0], PIXEL_ARTS.pipe[1]);
-cacheSprite("pipeLower", PIXEL_ARTS.pipeReverse, PIXEL_ARTS.pipe[1]);
-cacheSprite("grayWolf", PIXEL_ARTS.grayWolf[0], PIXEL_ARTS.grayWolf[1], 3);
-cacheSprite("flappy", PIXEL_ARTS.flappy[0], PIXEL_ARTS.flappy[1], 3);
-cacheSprite("bg", PIXEL_ARTS.bg[0], PIXEL_ARTS.bg[1], 13);
+let selectedBird = "grayWolf1";
+
+const PIXEL_ARTS = { pipe, playbtn, leaderboardbtn, shopbtn, grayWolf, flappy, bg };
+PIXEL_ARTS.pipeReverse = reverseArr(PIXEL_ARTS.pipe[0]);
+
+const cachedPIXEL_ARTS = {};
+
+prerender("pipeUpper", PIXEL_ARTS.pipe[0], PIXEL_ARTS.pipe[1]);
+prerender("pipeLower", PIXEL_ARTS.pipeReverse, PIXEL_ARTS.pipe[1]);
+prerender("flappy1", PIXEL_ARTS.flappy[0][0], PIXEL_ARTS.flappy[1], 3);
+prerender("flappy2", PIXEL_ARTS.flappy[0][1], PIXEL_ARTS.flappy[1], 3);
+prerender("grayWolf1", PIXEL_ARTS.grayWolf[0][0], PIXEL_ARTS.grayWolf[1], 3);
+prerender("grayWolf2", PIXEL_ARTS.grayWolf[0][1], PIXEL_ARTS.grayWolf[1], 3);
+
+prerender("bg", PIXEL_ARTS.bg[0], PIXEL_ARTS.bg[1], 13);
 
 const render = (props, pixelArt, colorSet) => {
     for (let row = 0; row < pixelArt.length; row++) {
@@ -82,7 +88,7 @@ const render = (props, pixelArt, colorSet) => {
         }
     }
 }
-const cachedRender = (props, spriteName) => ctx.drawImage(spriteCache[spriteName], props.x, props.y)
+const cachedRender = (props, spriteName) => ctx.drawImage(cachedPIXEL_ARTS[spriteName], props.x, props.y)
 const bird = {
     x: 50,
     y: 10,
@@ -93,16 +99,27 @@ const bird = {
         this.velocity = this.velocity + (GRAVITY * (2 / FPS));
         this.y += (this.velocity * (2 / FPS)) + (0.5 * GRAVITY * (2 / FPS)**2);
         
+        if (this.y > 500) {
+            this.y = 500;
+            this.velocity = 0; 
+        }
+
         if (this.eventAdded !== true) {
             window.addEventListener("keydown", (e) => {
                 if (e.key === " ") {
-                    this.velocity = -200;
+                    this.velocity = -250;
+                    selectedBird = "grayWolf2";
                 }
+            });
+            window.addEventListener("keyup", (e) => {
+                window.setTimeout(() => {
+                    selectedBird = "grayWolf1"; 
+                }, 100);
             });
             this.eventAdded = true;
         }
-        
-        cachedRender({ x: this.x, y: this.y }, 'flappy');
+
+        cachedRender({ x: this.x, y: this.y }, selectedBird);
     }
 }
 

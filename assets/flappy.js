@@ -1,25 +1,45 @@
 export const flappy = [
-    [   
-        "       ooooooooo ", 
-        "      ooyyyyyowwoo",
-        "    oooyyyyyyowwwoo",
-        "  ooowyyyyyyyowwwwoo ",
-        " oowwwyyyyyyyowwbwwoo",
-        "oowwwwyyyyyyyowwbwwwo",
-        "ooooooooyyyyyowwbwwwo",
-        "oowwwwwwooyyyoowwwwwo",
-        "oowwwwwwooyyyoowwwwwo",
-        "oowwwwwwooyyyyyoowwwo",
-        "ooyyyyyyooyyyyyyyoooooo",
-        "ooooooooggggyyyyorrrrro",
-        " oggggggggggggggorrrrro",
-        " ogggggggggggggorrrrrro",
-        " oooogggggggggoorroooo",
-        "    ooooggggoorrrrroo",
-        "    ooooggggggooooo",
-        "     ooooooooo"
-
-
+    [  
+        [
+            "       ooooooooo ", 
+            "      ooyyyyyowwoo",
+            "    oooyyyyyyowwwoo",
+            "  ooowyyyyyyyowwwwoo ",
+            " oowwwyyyyyyyowwbwwoo",
+            "oowwwwyyyyyyyowwbwwwo",
+            "ooooooooyyyyyowwbwwwo",
+            "oowwwwwwooyyyoowwwwwo",
+            "oowwwwwwooyyyoowwwwwo",
+            "oowwwwwwooyyyyyoowwwo",
+            "ooyyyyyyooyyyyyyyoooooo",
+            "ooooooooggggyyyyorrrrro",
+            " oggggggggggggggorrrrro",
+            " ogggggggggggggorrrrrro",
+            " oooogggggggggoorroooo",
+            "    ooooggggoorrrrroo",
+            "    ooooggggggooooo",
+            "     ooooooooo"
+        ],
+        [
+            "       ooooooooo ", 
+            "      ooyyyyyowwoo",
+            "    oooyyyyyyowwwoo",
+            "  ooowyyyyyyyowwwwoo ",
+            " oowwwyyyyyyyowwbwwoo",
+            "oowwwwyyyyyyyowwbwwwo",
+            "oowwwwyyyyyyyowwbwwwo",
+            "oowwwwyyyyyyyoowwwwwo",
+            "ooooooooooyyyoowwwwwo",
+            "oowwwwwwooyyyyyoowwwo",
+            "ooyyyyyyooyyyyyyyoooooo",
+            "ooooooooggggyyyyorrrrro",
+            " oggggggggggggggorrrrro",
+            " ogggggggggggggorrrrrro",
+            " oooogggggggggoorrrroo",
+            "    ooooggggoorrrrroo",
+            "    ooooggggggooooo",
+            "     ooooooooo"
+        ],
     ],
     {
         "o": "#262221",
@@ -29,6 +49,7 @@ export const flappy = [
         "b": "#423E3B",
         "g": "#FFBA00",
         "s": "#f2f1f6",
-        "l": "#8f8969"
-    }
+        "l": "#8f8969",
+        
+    },
 ]
