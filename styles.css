@@ -23,6 +23,7 @@ body {
     width: 600px;
     height: 600px;
     font-weight: 400;
+    filter: contrast(0.9);
     font-family: "Press Start 2P", system-ui;
 }
 
