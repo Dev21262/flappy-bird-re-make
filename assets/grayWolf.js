@@ -31,7 +31,7 @@ export const grayWolf = [
             "okssssskoggggggossssssso",
             "okkkkkkkoggggggoooooooooo",
             " oooooooggggggollllllllllo",
-            "   okkkkgggggoloooooooooo",
+            "   okkkkgggggolllloooooooo",
             "    okkkkgggggolllllllllo",
             "    okkkkkkggggooooooooo", 
             "     ooooooooooooo",
