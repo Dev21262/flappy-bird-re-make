@@ -2,6 +2,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: "Press Start 2P", system-ui;
 }
 
 html {
@@ -16,7 +17,6 @@ body {
     align-items: center;
     justify-content: center;
     background-color: #1C1C1C;
-    font-family: "Press Start 2P", system-ui;
 }
 
 #canvas {
@@ -24,6 +24,5 @@ body {
     height: 600px;
     font-weight: 400;
     filter: contrast(0.9);
-    font-family: "Press Start 2P", system-ui;
 }
 
