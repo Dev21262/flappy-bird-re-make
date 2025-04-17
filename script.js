@@ -4,18 +4,15 @@ import { shopbtn} from "./assets/shopbtn.js"
 import { leaderboardbtn } from "./assets/leaderboardbtn.js";
 import { grayWolf } from "./assets/grayWolf.js";
 import { flappy } from "./assets/flappy.js";
+import { ogFlappy } from "./assets/ogFlappy.js";
 import { bg } from "./assets/bg.js";
-
-const canvas = document.getElementById("canvas");
-
-
-const ctx = canvas.getContext("2d");
-
 
 const width = 600;
 const height = 600;
 const maxWidth = window.innerWidth;
 const maxHeight = window.innerHeight;
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
 canvas.width = width;
 canvas.height = height;
@@ -26,103 +23,22 @@ const reverseArr = (array) => {
     let newArray = [];
     for (let value of array) {
         newArray.unshift(value);
-     }
+    }
+    
     return newArray;
-
 };
-function prerender(name, pixelArt, colorSet, sizeX = 2, sizeY = sizeX) {
-    const shadowCanvas = document.createElement('canvas');
-    const shadowCtx = shadowCanvas.getContext('2d');
 
-    const strLengthsArr = [];
-    let rows = pixelArt.length;
-    for (let strings of pixelArt) {
-        strLengthsArr.push(strings.length);
-    }
-    let cols = Math.max(...strLengthsArr);
-
-    shadowCanvas.width = cols * sizeX;
-    shadowCanvas.height = rows * sizeY;
-    
-    for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < cols; col++) {
-            const character = pixelArt[row][col];
-            if (character !== " " && character !== undefined) {
-                shadowCtx.fillStyle = colorSet[character];
-                shadowCtx.fillRect(col * sizeX, row * sizeY, sizeX, sizeY);
-            } 
-        }
-    }
-    
-    cachedPIXEL_ARTS[name] = shadowCanvas; 
-}
-
-let score = 0;
-let selectedBird = "grayWolf1";
-const PIXEL_ARTS = { pipe, playbtn, leaderboardbtn, shopbtn, grayWolf, flappy, bg };
+const CACHED_PIXEL_ARTS = {};
+const PIXEL_ARTS = { pipe, playbtn, leaderboardbtn, shopbtn, grayWolf, flappy, ogFlappy, bg };
 PIXEL_ARTS.pipeReverse = reverseArr(PIXEL_ARTS.pipe[0]);
 
-const cachedPIXEL_ARTS = {};
-
-prerender("pipeUpper", PIXEL_ARTS.pipe[0], PIXEL_ARTS.pipe[1], 3);
-prerender("pipeLower", PIXEL_ARTS.pipeReverse, PIXEL_ARTS.pipe[1], 3);
-prerender("flappy1", PIXEL_ARTS.flappy[0][0], PIXEL_ARTS.flappy[1], 3);
-prerender("flappy2", PIXEL_ARTS.flappy[0][1], PIXEL_ARTS.flappy[1], 3);
-prerender("grayWolf1", PIXEL_ARTS.grayWolf[0][0], PIXEL_ARTS.grayWolf[1], 3);
-prerender("grayWolf2", PIXEL_ARTS.grayWolf[0][1], PIXEL_ARTS.grayWolf[1], 3);
-prerender("bg", PIXEL_ARTS.bg[0], PIXEL_ARTS.bg[1], 13);
-
-/**Calculate height and width of upper pipe by mutplying no of horizotnal and
- vertical pixels by 3 **/      
+/**Calculate height and width of upper pipe by multiplying no of horizontal and
+vertical pixels by 3(pixel size) **/    
 const pipeW = (PIXEL_ARTS.pipe[0][0].length) * 3;
 const pipeH = (PIXEL_ARTS.pipe[0].length) * 3;
 
-
-
-const render = (props, pixelArt, colorSet) => {
-    for (let row = 0; row < pixelArt.length; row++) {
-        for (let col = 0; col < pixelArt[row].length; col++) {
-            const {x, y, size} = props;
-            const character =  pixelArt[row][col];
-            if (character !== " ") {
-                ctx.fillStyle = colorSet[character];
-                ctx.fillRect(x + (col * size), y + (row  * size), size, size);
-                
-            }
-        }
-    }
-}
-const cachedRender = (props, spriteName) => ctx.drawImage(cachedPIXEL_ARTS[spriteName], props.x, props.y)
-const bird = {
-    x: 50,
-    y: 150,
-    rotTheta: 0,
-    velocity: 10,
-    eventAdded: false,
-    h: (PIXEL_ARTS['flappy'][0][0].length * 3),
-    render: function () {
-        this.velocity = this.velocity + (GRAVITY * (2 / FPS));
-        this.y += (this.velocity * (2 / FPS)) + (0.5 * GRAVITY * (2 / FPS)**2);
-
-
-        if (this.eventAdded !== true) {
-            window.addEventListener("keydown", (e) => {
-                if (e.key === " ") {
-                    this.velocity = -140;
-                    selectedBird = "flappy2";
-                }
-            });
-            window.addEventListener("keyup", (e) => {
-                window.setTimeout(() => {
-                    selectedBird = "flappy1"; 
-                }, 150);
-            });
-            this.eventAdded = true;
-        }
-
-        cachedRender({ x: this.x, y: this.y }, selectedBird);
-    }
-}
+const UP_RANDOM_Y = [-pipeH + 140, -pipeH + 290, -pipeH + 250, -pipeH + 240, -pipeH + 340, -pipeH + 280, -pipeH + 170];
+const DOWN_RANDOM_Y = [height - 350, height - 200, height - 240, height - 250, height - 150, height - 210, height - 330];
 
 class Button {
     constructor(x, y, w, h, r, color, hoverColor, art) {
@@ -161,6 +77,8 @@ class Button {
 
     }
 }
+
+
 const PLAYBTN = new Button(
     100, 220, 185, 140, 5,
     "#FAFDF5", "#D1D3CD", 
@@ -173,6 +91,136 @@ const HIGHSCOREBTN = new Button(
     320, 220, 185, 140, 5,
     "#FAFDF5", "#D1D3CD",
     {x: 370, y: 255, size: 2, art: PIXEL_ARTS.leaderboardbtn[0], colorSet: PIXEL_ARTS.leaderboardbtn[1]}); 
+
+
+const prerender = (name, pixelArt, colorSet, sizeX = 2, sizeY = sizeX) => {
+    const shadowCanvas = document.createElement('canvas');
+    const shadowCtx = shadowCanvas.getContext('2d');
+
+    const strLengthsArr = [];
+    let rows = pixelArt.length;
+    for (let strings of pixelArt) {
+        strLengthsArr.push(strings.length);
+    }
+    let cols = Math.max(...strLengthsArr);
+
+    shadowCanvas.width = cols * sizeX;
+    shadowCanvas.height = rows * sizeY;
+    
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+            const character = pixelArt[row][col];
+            if (character !== " " && character !== undefined) {
+                shadowCtx.fillStyle = colorSet[character];
+                shadowCtx.fillRect(col * sizeX, row * sizeY, sizeX, sizeY);
+            } 
+        }
+    }
+    
+    CACHED_PIXEL_ARTS[name] = shadowCanvas; 
+}
+
+let score = 0;
+let animX = 0;
+let animVelocity = -3;
+let pipeVelocity = -4.5;
+let selectedBird = "ogFlappy1";
+let upperPipesArr = [];
+let lowerPipesArr = [];
+let bird = {
+    x: 50,
+    y: 150,
+    dead: !false,
+    velocity: 15,
+    angle: Math.PI * 0,
+    eventAdded: false,
+    fly: function (action) {
+        if (action.key === " ") {
+            this.velocity = -140;
+            this.angle = (-Math.PI / 80); 
+            selectedBird = "flappy2";
+        }
+    },
+    w: (PIXEL_ARTS['flappy'][0][0][8].length * 3),
+    h: (PIXEL_ARTS['flappy'][0][0].length * 3),
+    render: function () {
+        this.velocity = this.velocity + (GRAVITY * (2 / FPS)); // v = u + at updated per 2 frames
+        this.y += (this.velocity * (2 / FPS)) + (0.5 * GRAVITY * (2 / FPS)**2); // s = ut + 1/2at^(2)
+
+        if (this.y > 600) {
+            this.dead = true;
+            death();
+        }
+
+        if (this.canFly !== true) {
+            this.namedFunc = (e) => this.fly(e);
+            window.addEventListener("keydown", this.namedFunc);
+            window.addEventListener("keyup", () => {
+                window.setTimeout(() => {
+                    this.angle = 0; 
+                    selectedBird = "flappy1"; 
+                }, 150);
+            });
+           
+            this.canFly = true;
+        } else if (this.dead === true || this.y > 600) {
+            window.removeEventListener("keydown", this.namedFunc);
+        }
+
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle);
+        cachedRender({ x: 0, y: 0 }, selectedBird);
+        ctx.restore();
+    }
+}
+let pipeSpam = window.setInterval(add_pipes, 1400);
+
+prerender("pipeUpper", PIXEL_ARTS.pipe[0], PIXEL_ARTS.pipe[1], 3);
+prerender("pipeLower", PIXEL_ARTS.pipeReverse, PIXEL_ARTS.pipe[1], 3);
+prerender("flappy1", PIXEL_ARTS.flappy[0][0], PIXEL_ARTS.flappy[1], 3);
+prerender("flappy2", PIXEL_ARTS.flappy[0][1], PIXEL_ARTS.flappy[1], 3);
+prerender("ogFlappy1", PIXEL_ARTS.ogFlappy[0][0], PIXEL_ARTS.ogFlappy[1], 3);
+prerender("ogFlappy2", PIXEL_ARTS.ogFlappy[0][1], PIXEL_ARTS.ogFlappy[1], 3);
+prerender("grayWolf1", PIXEL_ARTS.grayWolf[0][0], PIXEL_ARTS.grayWolf[1], 3);
+prerender("grayWolf2", PIXEL_ARTS.grayWolf[0][1], PIXEL_ARTS.grayWolf[1], 3);
+prerender("bg", PIXEL_ARTS.bg[0], PIXEL_ARTS.bg[1], 13);
+
+  
+function render(props, pixelArt, colorSet) {
+    for (let row = 0; row < pixelArt.length; row++) {
+        for (let col = 0; col < pixelArt[row].length; col++) {
+            const {x, y, size} = props;
+            const character =  pixelArt[row][col];
+            if (character !== " ") {
+                ctx.fillStyle = colorSet[character];
+                ctx.fillRect(x + (col * size), y + (row  * size), size, size);
+                
+            }
+        }
+    }
+}
+const cachedRender = (props, spriteName) => ctx.drawImage(CACHED_PIXEL_ARTS[spriteName], props.x, props.y)
+
+function add_pipes() {
+    const randomIndex = Math.round(Math.random() * (UP_RANDOM_Y.length - 1));
+    
+    upperPipesArr.push({ x: 600, y: UP_RANDOM_Y[randomIndex] });
+    lowerPipesArr.push({ x: 600, y: DOWN_RANDOM_Y[randomIndex] });
+}
+
+
+function death() {
+    bird.dead = true;
+    bird.velocity += 25;
+    bird.angle = Math.PI / 100;
+    
+    pipeVelocity = 0;
+    animVelocity = 0;
+    window.clearInterval(pipeSpam);
+}
+
+// death();
 
 function menu() { 
     ctx.clearRect(0, 0, width, height);
@@ -234,42 +282,21 @@ function menu() {
 
     render({x: 520, y: 0, size: 2}, PIXEL_ARTS.pipe[0], PIXEL_ARTS.pipe[1]);
     render({x: -10, y: 300, size: 2}, PIXEL_ARTS.pipe[0].reverse(), PIXEL_ARTS.pipe[1]);
- }
-
-//
-
-let upperRandY = [-pipeH + 140, -pipeH + 290, -pipeH + 250, -pipeH + 240, -pipeH + 340, -pipeH + 280, -pipeH + 170];
-let lowerRandY = [height - 350, height - 200, height - 240, height - 250, height - 150, height - 210, height - 330];
-let upperPipesArr = [];
-let lowerPipesArr = [];
-
-function add_pipes() {
-    window.setInterval(() => {
-        const randomIndex = Math.round(Math.random() * (upperRandY.length - 1));
-        upperPipesArr.push({ x: 600, y: upperRandY[randomIndex] });
-        lowerPipesArr.push({ x: 600, y: lowerRandY[randomIndex] });
-    }, 1700);
-
 }
 
-add_pipes();
-
-let patty = 0;
 function play() { 
-    patty -= 3;
+    animX += animVelocity;
     ctx.clearRect(0, 0, width, height);
 
     ctx.fillRect(0, 0, width, height);
     cachedRender({ x: 0, y: 0 }, 'bg');
 
-    if (patty <= -25) {patty += 25};
-
-    for (let patX = patty; patX < 600; patX += 25) {
+    for (let x = animX; x < 600; x += 25) {
         ctx.beginPath();
-        ctx.moveTo(patX, 520);     // Start at top of left line
-        ctx.lineTo(patX - 5, 532);     // Bottom of left line
-        ctx.lineTo(patX + 5, 532);     // Top of right line
-        ctx.lineTo(patX + 10, 520);     // Bottom of right line
+        ctx.moveTo(x, 520);     // Start at top of left line
+        ctx.lineTo(x - 5, 532);     // Bottom of left line
+        ctx.lineTo(x + 5, 532);     // Top of right line
+        ctx.lineTo(x + 10, 520);     // Bottom of right line
         ctx.fillStyle = "#73BF2E"; // e.g., "red" or "#FF0000"
         ctx.fill();              // Fill the shape
     }
@@ -283,15 +310,14 @@ function play() {
     ctx.lineTo(600, 532);   
     ctx.stroke();
 
-    
 
     bird.render();
     for (let obj of upperPipesArr) {
-        obj.x -= 4.5;
+        obj.x += pipeVelocity;
         cachedRender({ x: obj.x, y: obj.y }, 'pipeUpper');
     }
     for (let obj of lowerPipesArr) {
-        obj.x -= 4.5;
+        obj.x += pipeVelocity;
         cachedRender({ x: obj.x, y: obj.y }, 'pipeLower');
     }
 
@@ -305,21 +331,31 @@ function play() {
         }
     }
 
-    if (upperPipesArr.length !== 0 && lowerPipesArr.length !== 0) {
-        if (upperPipesArr[0].x < bird.x && (upperPipesArr[0].x + pipeW) > bird.x &&
-            (upperPipesArr[0].y + pipeH)  > (bird.y)
-        ) {
-            score = 0;
-            
-        }
-        if (lowerPipesArr[0].x < bird.x &&
-            (lowerPipesArr[0].x + pipeW) > bird.x &&
-            (lowerPipesArr[0].y) < (bird.y + bird.h)
-        ) {
-            score = 0;
-        }    
-    }
+    if (upperPipesArr.length !== 0 && lowerPipesArr.length !== 0 && !bird.dead) {
+        if  (upperPipesArr[0].x < (bird.x + bird.w) &&
+            (upperPipesArr[0].x + pipeW) > bird.x &&
+            (upperPipesArr[0].y + pipeH)  > (bird.y) ||
 
+            lowerPipesArr[0].x < (bird.x + bird.w) &&
+            (lowerPipesArr[0].x + pipeW) > bird.x &&
+            (lowerPipesArr[0].y) < (bird.y + bird.h)) 
+        {
+            death ();            
+        }
+    } else if (bird.dead) {
+        //Death Screen Code
+        ctx.fillStyle = "#DCF1D1";
+        ctx.fillRect(150, 130, 300, 350);
+
+        ctx.fillStyle = "#000000"
+        ctx.font = "0.85rem 'Press Start 2P', system-ui";
+        ctx.fillText("BEST: " + score, 300, 200);
+        ctx.fillText("SCORE: " + score, 300, 230);
+
+        render({x: 250, y: 260, size: 4}, PIXEL_ARTS.flappy[0][0], PIXEL_ARTS.flappy[1]);
+
+        
+    }
 
     ctx.textAlign = "center";
     ctx.font = "2rem 'Press Start 2P', system-ui";
@@ -335,5 +371,5 @@ function play() {
     requestAnimationFrame(play);
 }
 
-// play();
-menu(); 
+play();
+// menu(); 
