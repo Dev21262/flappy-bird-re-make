@@ -226,7 +226,8 @@ prerender("grayWolf2", PIXEL_ARTS.grayWolf[0][1], PIXEL_ARTS.grayWolf[1], 3);
 prerender("bg", PIXEL_ARTS.bg[0], PIXEL_ARTS.bg[1], 13);
 prerender("bg", PIXEL_ARTS.bg[0], PIXEL_ARTS.bg[1], 13);
 prerender("bg", PIXEL_ARTS.bg[0], PIXEL_ARTS.bg[1], 13);
-
+prerender("bigFlappy", PIXEL_ARTS.flappy[0][0], PIXEL_ARTS.flappy[1], 7);
+  
   
 function render(props, pixelArt, colorSet) {
     for (let row = 0; row < pixelArt.length; row++) {
@@ -344,9 +345,7 @@ function menu() {
     HIGHSCOREBTN.render();
     SHOPBTN.render();
 
-
-    render({x: 420, y: 380, size: 7}, PIXEL_ARTS.flappy[0][0], PIXEL_ARTS.flappy[1]);
-
+    cachedRender({x: 420, y: 380}, "bigFlappy");
     cachedRender({x: 520, y: 0}, "pipeUpper2");
     cachedRender({x: -10, y: 300}, "pipeLower2");
     menuLoop = requestAnimationFrame(menu);
@@ -466,6 +465,5 @@ function play() {
     playLoop = requestAnimationFrame(play);
 }
 
-
 // play();
-menu();            
+menu(); 
