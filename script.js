@@ -18,8 +18,7 @@ const ctx = canvas.getContext("2d");
 canvas.width = width;
 canvas.height = height;
 
-const FPS = 60;
-const GRAVITY = 175; //175
+const GRAVITY = 150; //175
 const reverseArr = (array) => {
     let newArray = [];
     for (let value of array) {
@@ -163,8 +162,8 @@ let animX = 0;
 let bestscore = 0;
 let scene = "Menu";
 let boxY = 700;
-let animVelocity = -3;
-let pipeVelocity = -4;
+let animVelocity = -5;
+let pipeVelocity = -5;
 let selectedBird = "ogFlappy1";
 let upperPipesArr = [];
 let lowerPipesArr = [];
@@ -177,7 +176,7 @@ let bird = {
     eventAdded: false,
     fly: function (action) {
         if (action.key === " ") {
-            this.velocity = -170;
+            this.velocity = -150;
             this.angle = (-Math.PI / 50); 
             selectedBird = "ogFlappy2";
         }
@@ -185,8 +184,8 @@ let bird = {
     w: (PIXEL_ARTS['ogFlappy'][0][0][8].length * 3),
     h: (PIXEL_ARTS['ogFlappy'][0][0].length * 3),
     render: function () {
-        this.velocity = this.velocity + (GRAVITY * (2 / FPS)); // v = u + at updated per 2 frames
-        this.y += (this.velocity * (2 / FPS)) + (0.5 * GRAVITY * (2 / FPS)**2); // s = ut + 1/2at^(2)
+        this.velocity = this.velocity + (GRAVITY * (1 / 20)); // v = u + at updated per 2 frames
+        this.y += (this.velocity * (1 / 20)) + (0.5 * GRAVITY * (1 / 20)**2); // s = ut + 1/2at^(2)
 
         if (this.canFly !== true) {
             this.namedFunc = (e) => this.fly(e);
@@ -260,6 +259,11 @@ function death() {
         boxY -= 15;
     }
     
+    if (score > bestscore) {
+        bestscore = score;
+    }
+
+
     ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
     ctx.fillRect(150, boxY, 300, 350);
     
@@ -267,6 +271,7 @@ function death() {
     ctx.font = "0.85rem 'Press Start 2P', system-ui";
     ctx.fillText("BEST: " + bestscore, 300, boxY + 70);
     ctx.fillText("SCORE: " + score, 300, boxY + 100);
+
     
     render({x: 250, y: boxY + 120, size: 4}, PIXEL_ARTS.ogFlappy[0][0], PIXEL_ARTS.ogFlappy[1]);
 
@@ -348,10 +353,12 @@ function leaderboard() {
 }
 
 function playAgain() {
+    score = 0;
     cancelAnimationFrame(playLoop);
     ctx.clearRect(0, 0, width, height);
     scene = "Play";
 
+    boxY = 700
     bird.y = 150;
     bird.velocity = 0;
     bird.dead = false;
@@ -360,14 +367,13 @@ function playAgain() {
     upperPipesArr = [];
     lowerPipesArr = [];
      
-    animVelocity = -3;
-    pipeVelocity = -4;
+    animVelocity = -5;
+    pipeVelocity = -5;
 
     pipeSpam = window.setInterval(add_pipes, 1500)
 
     
-    play();
-    // playLoop = requestAnimationFrame(play);
+    playLoop = requestAnimationFrame(play);
 }
 
 let playLoop;
@@ -407,10 +413,9 @@ function play() {
         obj.x += pipeVelocity;
         cachedRender({ x: obj.x, y: obj.y }, 'pipeLower');
     }
+
     bird.render();
 
-    
-    
     for (let i = upperPipesArr.length - 1; i >= 0; i--) {
         if (upperPipesArr[i].x < -80) {
             score += 1;
