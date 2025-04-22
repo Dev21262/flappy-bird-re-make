@@ -6,6 +6,7 @@ import { grayWolf } from "./assets/grayWolf.js";
 import { flappy } from "./assets/flappy.js";
 import { ogFlappy } from "./assets/ogFlappy.js";
 import { bg } from "./assets/bg.js";
+import { menubtn } from "./assets/menubtn.js";
 
 const width = 600;
 const height = 600;
@@ -18,7 +19,7 @@ canvas.width = width;
 canvas.height = height;
 
 const FPS = 60;
-const GRAVITY = 200; //175
+const GRAVITY = 175; //175
 const reverseArr = (array) => {
     let newArray = [];
     for (let value of array) {
@@ -28,8 +29,16 @@ const reverseArr = (array) => {
     return newArray;
 };
 
+let mouseX = 0;
+let mouseY = 0;
+let hoveringOn = undefined;
+canvas.addEventListener("mousemove", function(event) {
+    mouseX = event.clientX - ((maxWidth / 2) - 300); 
+    mouseY = event.clientY - ((maxHeight / 2) - 300); 
+});
+
 const CACHED_PIXEL_ARTS = {};
-const PIXEL_ARTS = { pipe, playbtn, leaderboardbtn, shopbtn, grayWolf, flappy, ogFlappy, bg };
+const PIXEL_ARTS = { pipe, playbtn, menubtn, leaderboardbtn, shopbtn, grayWolf, flappy, ogFlappy, bg };
 PIXEL_ARTS.pipeReverse = reverseArr(PIXEL_ARTS.pipe[0]);
 
 /**Calculate height and width of upper pipe by multiplying no of horizontal and
@@ -40,8 +49,25 @@ const pipeH = (PIXEL_ARTS.pipe[0].length) * 3;
 const UP_RANDOM_Y = [-pipeH + 140, -pipeH + 290, -pipeH + 250, -pipeH + 240, -pipeH + 340, -pipeH + 280, -pipeH + 170];
 const DOWN_RANDOM_Y = [height - 350, height - 200, height - 240, height - 250, height - 150, height - 210, height - 330];
 
+function hoveringClick() {
+    if (hoveringOn === "Play" && scene === "Menu") {
+        play();
+    } else if (hoveringOn === "Menu" && bird.dead) {
+        menu();
+    } else if (hoveringOn === "Shop" && scene === "Menu") {
+        shop();
+    } else if (hoveringOn === "Highscore" && scene === "Menu") {
+        leaderboard();
+    } else if (hoveringOn === "Playagain" && bird.dead) {
+        playAgain();
+    } else {
+
+    }
+}
+window.addEventListener("click", hoveringClick);
+
 class Button {
-    constructor(x, y, w, h, r, color, hoverColor, art, newScene, action) {
+    constructor(x, y, w, h, r, color, hoverColor, art, btnName) {
         this.x = x;
         this.y = y;
         this.w = w;
@@ -50,51 +76,29 @@ class Button {
         this.color = color;
         this.hoverColor = hoverColor;
         this.art = art;
-        this.newScene = newScene;
-        this.clickable = false;
-        this.addedEvt = false;
-        this.action = action;
+        this.btnName = btnName;
     }
 
     render() {
-        let { x, y, w, h, r, color, hoverColor, art, newScene, clickable, addedEvt, action} = this;
-     
-        const func = () => {
-            if (scene === "Menu") {
-                addedEvt = true;
-                clickable = false;
-                scene = newScene;
-                
-                console.log(scene);
-                action();
-            }
-        };
+        let currentColor = undefined;
+        let { x, y, w, h, r, color, hoverColor, art, btnName } = this;
+        if (mouseX >= x && mouseX <= x + w &&
+            mouseY >= y && mouseY <= y + h) {
+            hoveringOn = btnName;
+            currentColor = hoverColor;
+        } else {
+            currentColor = color;
+        }
 
-        canvas.addEventListener("mousemove", function(event) {
-            const ex = event.clientX - ((maxWidth / 2) - 300); 
-            const ey = event.clientY - ((maxHeight / 2) - 300); 
-            ctx.fillStyle = color;
-
-            if (ex >= x && ex <= x + w &&
-                ey >= y && ey <= y + h) {
-                clickable = true;
-                ctx.fillStyle = hoverColor;
-                if (clickable && !addedEvt) {
-                    window.addEventListener("click", func);
-                }
-            } else {
-                addedEvt = false;
-                clickable = false;
-                window.removeEventListener("click", func);
-            }
-            ctx.lineWidth = 2.5;
-            ctx.strokeStyle = "#292D32";
-            ctx.beginPath();
-            ctx.roundRect(x, y, w, h, r);
-            ctx.fill();
-            ctx.stroke();
-            render({x: art.x, y: art.y, size: art.size}, art.art, art.colorSet);
-        });
+        ctx.fillStyle = currentColor;
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = "#292D32";
+        ctx.beginPath();
+        ctx.roundRect(x, y, w, h, r);
+        ctx.fill();
+        ctx.stroke();
+        render({x: art.x, y: art.y, size: art.size}, art.art, art.colorSet); 
+           
     }
 }
 
@@ -103,17 +107,27 @@ const PLAYBTN = new Button(
     100, 220, 185, 140, 5,
     "#FAFDF5", "#D1D3CD", 
     {x: 165, y: 255, size: 2, art: PIXEL_ARTS.playbtn[0], colorSet: PIXEL_ARTS.playbtn[1]},
-    "Play", play) 
+    "Play"); 
+const MENUBTN = new Button(
+    220, 385, 150, 60, 5,
+    "#1D3A3D", "#264244", 
+    {x: 280, y: 395, size: 1, art: PIXEL_ARTS.menubtn[0], colorSet: PIXEL_ARTS.menubtn[1]},
+    "Menu"); 
+const PLAYAGAINBTN = new Button(
+    220, 315, 150, 60, 5,
+    "#1D3A3D", "#264244", 
+    {x: 280, y: 325, size: 1, art: PIXEL_ARTS.playbtn[0], colorSet: PIXEL_ARTS.menubtn[1]},
+    "Playagain"); 
 const SHOPBTN = new Button(
     205, 375, 185, 145, 5,
     "#FAFDF5", "#D1D3CD",
     {x: 265, y: 410, size: 2, art: PIXEL_ARTS.shopbtn[0], colorSet: PIXEL_ARTS.shopbtn[1]},
-    "Shop", shop);
+    "Shop");
 const HIGHSCOREBTN = new Button(
     320, 220, 185, 140, 5,
     "#FAFDF5", "#D1D3CD",
     {x: 370, y: 255, size: 2, art: PIXEL_ARTS.leaderboardbtn[0], colorSet: PIXEL_ARTS.leaderboardbtn[1]},
-    "Highscore", leaderboard); 
+    "Highscore"); 
 
 
 const prerender = (name, pixelArt, colorSet, sizeX = 2, sizeY = sizeX) => {
@@ -146,9 +160,11 @@ const prerender = (name, pixelArt, colorSet, sizeX = 2, sizeY = sizeX) => {
 
 let score = 0;
 let animX = 0;
+let bestscore = 0;
 let scene = "Menu";
-let animVelocity = -2;
-let pipeVelocity = -3.5;
+let boxY = 700;
+let animVelocity = -3;
+let pipeVelocity = -4;
 let selectedBird = "ogFlappy1";
 let upperPipesArr = [];
 let lowerPipesArr = [];
@@ -183,7 +199,7 @@ let bird = {
             });
            
             this.canFly = true;
-        } else if (this.dead === true || this.y > 600) {
+        } else if (this.dead === true || this.y > height) {
             window.removeEventListener("keydown", this.namedFunc);
         }
 
@@ -232,34 +248,33 @@ function add_pipes() {
     }
 }
 
-
 function death() {
-    bird.dead = true;
-    bird.velocity += 50;
+    bird.velocity += 5;
     
     pipeVelocity = 0;
     animVelocity = 0;
+
     window.clearInterval(pipeSpam);
+
+    if (boxY >= 130) {
+        boxY -= 15;
+    }
+    
+    ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+    ctx.fillRect(150, boxY, 300, 350);
+    
+    ctx.fillStyle = "white"
+    ctx.font = "0.85rem 'Press Start 2P', system-ui";
+    ctx.fillText("BEST: " + bestscore, 300, boxY + 70);
+    ctx.fillText("SCORE: " + score, 300, boxY + 100);
+    
+    render({x: 250, y: boxY + 120, size: 4}, PIXEL_ARTS.ogFlappy[0][0], PIXEL_ARTS.ogFlappy[1]);
+
+
+    PLAYAGAINBTN.render();
+    MENUBTN.render();
 }
 
-let ya = 700;
-function checkGameOver() {
-    if (bird.dead) {
-        if (ya >= 130) {
-            ya -= 10;
-        }
-        ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-        ctx.fillRect(150, ya, 300, 350);
-        
-        ctx.fillStyle = "white"
-        ctx.font = "0.85rem 'Press Start 2P', system-ui";
-        ctx.fillText("BEST: " + score, 300, ya + 70);
-        ctx.fillText("SCORE: " + score, 300, ya + 100);
-        
-        render({x: 250, y: ya + 120, size: 4}, PIXEL_ARTS.ogFlappy[0][0], PIXEL_ARTS.ogFlappy[1]);
-    
-    }
-}
 
 function menu() { 
     ctx.clearRect(0, 0, width, height);
@@ -285,6 +300,7 @@ function menu() {
     
     //The Stroke of text
     ctx.lineWidth = 5;
+    ctx.textAlign = "left";
     ctx.strokeStyle = "#292D32";
     ctx.strokeText("FLAPPY", 30, 130);
     ctx.strokeText("BIRD", 30, 210);
@@ -319,7 +335,8 @@ function menu() {
 
     render({x: 420, y: 380, size: 7}, PIXEL_ARTS.flappy[0][0], PIXEL_ARTS.flappy[1]);
     render({x: 520, y: 0, size: 2}, PIXEL_ARTS.pipe[0], PIXEL_ARTS.pipe[1]);
-    render({x: -10, y: 300, size: 2}, PIXEL_ARTS.pipe[0].reverse(), PIXEL_ARTS.pipe[1]);
+    render({x: -10, y: 300, size: 2}, PIXEL_ARTS.pipeReverse, PIXEL_ARTS.pipe[1]);
+    requestAnimationFrame(menu);
 }
 
 function shop() {
@@ -330,12 +347,36 @@ function leaderboard() {
 
 }
 
+function playAgain() {
+    cancelAnimationFrame(playLoop);
+    ctx.clearRect(0, 0, width, height);
+    scene = "Play";
+
+    bird.y = 150;
+    bird.velocity = 0;
+    bird.dead = false;
+    bird.canFly = false;
+
+    upperPipesArr = [];
+    lowerPipesArr = [];
+     
+    animVelocity = -3;
+    pipeVelocity = -4;
+
+    pipeSpam = window.setInterval(add_pipes, 1500)
+
+    
+    play();
+    // playLoop = requestAnimationFrame(play);
+}
+
+let playLoop;
+
 function play() { 
     animX += animVelocity;
-    // bird.dead = false;
-    ctx.clearRect(0, 0, width, height);
 
-    ctx.fillRect(0, 0, width, height);
+    scene = "Play";
+    ctx.clearRect(0, 0, width, height);
     cachedRender({ x: 0, y: 0 }, 'bg');
 
     for (let x = animX; x < 600; x += 25) {
@@ -387,16 +428,17 @@ function play() {
             (lowerPipesArr[0].x + pipeW) > bird.x &&
             (lowerPipesArr[0].y) < (bird.y + bird.h)) 
         {
-            death();            
+            bird.dead = true;
         }
 
         if (bird.y > 600) {
-            death();
+            bird.dead = true;
         }
     }
 
-    
-    checkGameOver();
+    if (bird.dead) {
+        death();
+    }
 
     ctx.textAlign = "center";
     ctx.font = "2rem 'Press Start 2P', system-ui";
@@ -409,7 +451,7 @@ function play() {
     ctx.strokeStyle = "rgba(0, 0, 0, 0.9)";
     ctx.strokeText(score, 300, 100);
 
-    requestAnimationFrame(play);
+    playLoop = requestAnimationFrame(play);
 }
 
 function init() {
