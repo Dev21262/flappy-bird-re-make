@@ -356,7 +356,12 @@ function shop() {
 }
 
 function leaderboard() {
+    cancelAnimationFrame(menuLoop)
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = "red";
+    ctx.fillRect(50, 100, 90, 90);
 
+    requestAnimationFrame(leaderboard);
 }
 
 function playAgain() {
@@ -384,7 +389,7 @@ function playAgain() {
 let playLoop;
 
 function play() {
-    menuLoop = cancelAnimationFrame(menu);
+    cancelAnimationFrame(menuLoop);
     animX += animVelocity;
 
     scene = "Play";
@@ -466,4 +471,4 @@ function play() {
 }
 
 // play();
-menu(); 
+menu();
