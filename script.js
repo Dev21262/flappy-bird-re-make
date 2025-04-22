@@ -8,6 +8,7 @@ import { ogFlappy } from "./assets/ogFlappy.js";
 import { bg } from "./assets/bg.js";
 import { menubtn } from "./assets/menubtn.js";
 
+
 const width = 600;
 const height = 600;
 const maxWidth = window.innerWidth;
@@ -213,13 +214,17 @@ let bird = {
 let pipeSpam = window.setInterval(add_pipes, 1500);
 
 prerender("pipeUpper", PIXEL_ARTS.pipe[0], PIXEL_ARTS.pipe[1], 3);
+prerender("pipeUpper2", PIXEL_ARTS.pipe[0], PIXEL_ARTS.pipe[1], 2);
 prerender("pipeLower", PIXEL_ARTS.pipeReverse, PIXEL_ARTS.pipe[1], 3);
+prerender("pipeLower2", PIXEL_ARTS.pipeReverse, PIXEL_ARTS.pipe[1], 2);
 prerender("flappy1", PIXEL_ARTS.flappy[0][0], PIXEL_ARTS.flappy[1], 3);
 prerender("flappy2", PIXEL_ARTS.flappy[0][1], PIXEL_ARTS.flappy[1], 3);
 prerender("ogFlappy1", PIXEL_ARTS.ogFlappy[0][0], PIXEL_ARTS.ogFlappy[1], 4);
 prerender("ogFlappy2", PIXEL_ARTS.ogFlappy[0][1], PIXEL_ARTS.ogFlappy[1], 4);
 prerender("grayWolf1", PIXEL_ARTS.grayWolf[0][0], PIXEL_ARTS.grayWolf[1], 3);
 prerender("grayWolf2", PIXEL_ARTS.grayWolf[0][1], PIXEL_ARTS.grayWolf[1], 3);
+prerender("bg", PIXEL_ARTS.bg[0], PIXEL_ARTS.bg[1], 13);
+prerender("bg", PIXEL_ARTS.bg[0], PIXEL_ARTS.bg[1], 13);
 prerender("bg", PIXEL_ARTS.bg[0], PIXEL_ARTS.bg[1], 13);
 
   
@@ -248,39 +253,41 @@ function add_pipes() {
 }
 
 function death() {
-    bird.velocity += 5;
+    if (bird.dead) {
+        bird.velocity += 5;
+        
+        pipeVelocity = 0;
+        animVelocity = 0;
     
-    pipeVelocity = 0;
-    animVelocity = 0;
-
-    window.clearInterval(pipeSpam);
-
-    if (boxY >= 130) {
-        boxY -= 15;
+        window.clearInterval(pipeSpam);
+    
+        if (boxY >= 130) {
+            boxY -= 15;
+        }
+        
+        if (score > bestscore) {
+            bestscore = score;
+        }
+    
+    
+        ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+        ctx.fillRect(150, boxY, 300, 350);
+        
+        ctx.fillStyle = "white"
+        ctx.font = "0.85rem 'Press Start 2P', system-ui";
+        ctx.fillText("BEST: " + bestscore, 300, boxY + 70);
+        ctx.fillText("SCORE: " + score, 300, boxY + 100);
+    
+        
+        render({x: 250, y: boxY + 120, size: 4}, PIXEL_ARTS.ogFlappy[0][0], PIXEL_ARTS.ogFlappy[1]);
+    
+    
+        PLAYAGAINBTN.render();
+        MENUBTN.render();
     }
-    
-    if (score > bestscore) {
-        bestscore = score;
-    }
-
-
-    ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-    ctx.fillRect(150, boxY, 300, 350);
-    
-    ctx.fillStyle = "white"
-    ctx.font = "0.85rem 'Press Start 2P', system-ui";
-    ctx.fillText("BEST: " + bestscore, 300, boxY + 70);
-    ctx.fillText("SCORE: " + score, 300, boxY + 100);
-
-    
-    render({x: 250, y: boxY + 120, size: 4}, PIXEL_ARTS.ogFlappy[0][0], PIXEL_ARTS.ogFlappy[1]);
-
-
-    PLAYAGAINBTN.render();
-    MENUBTN.render();
 }
 
-
+let menuLoop;
 function menu() { 
     ctx.clearRect(0, 0, width, height);
 
@@ -339,9 +346,10 @@ function menu() {
 
 
     render({x: 420, y: 380, size: 7}, PIXEL_ARTS.flappy[0][0], PIXEL_ARTS.flappy[1]);
-    render({x: 520, y: 0, size: 2}, PIXEL_ARTS.pipe[0], PIXEL_ARTS.pipe[1]);
-    render({x: -10, y: 300, size: 2}, PIXEL_ARTS.pipeReverse, PIXEL_ARTS.pipe[1]);
-    requestAnimationFrame(menu);
+
+    cachedRender({x: 520, y: 0}, "pipeUpper2");
+    cachedRender({x: -10, y: 300}, "pipeLower2");
+    menuLoop = requestAnimationFrame(menu);
 }
 
 function shop() {
@@ -370,15 +378,14 @@ function playAgain() {
     animVelocity = -5;
     pipeVelocity = -5;
 
-    pipeSpam = window.setInterval(add_pipes, 1500)
-
-    
+    pipeSpam = window.setInterval(add_pipes, 1500);
     playLoop = requestAnimationFrame(play);
 }
 
 let playLoop;
 
-function play() { 
+function play() {
+    menuLoop = cancelAnimationFrame(menu);
     animX += animVelocity;
 
     scene = "Play";
@@ -459,17 +466,6 @@ function play() {
     playLoop = requestAnimationFrame(play);
 }
 
-function init() {
-    if (scene === "Play") {
-        play();
-    } else if (scene === "Menu") {
-        menu();
-    } else if (scene === "Shop") {
-        shop();
-    } else if (scene === "Highscore") {
-        leaderboard();
-    }
-}
 
 // play();
-menu(); 
+menu();            
