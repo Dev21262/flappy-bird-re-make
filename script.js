@@ -31,7 +31,14 @@ const reverseArr = (array) => {
 
 let mouseX = 0;
 let mouseY = 0;
-let hoveringOn = undefined;
+let hoveringOn = {
+    Play: false,
+    Menu: false,
+    Playagain: false,
+    Shop: false,
+    Highscore: false,
+
+};
 canvas.addEventListener("mousemove", function(event) {
     mouseX = event.clientX - ((maxWidth / 2) - 300); 
     mouseY = event.clientY - ((maxHeight / 2) - 300); 
@@ -50,15 +57,15 @@ const UP_RANDOM_Y = [-pipeH + 140, -pipeH + 290, -pipeH + 250, -pipeH + 240, -pi
 const DOWN_RANDOM_Y = [height - 350, height - 200, height - 240, height - 250, height - 150, height - 210, height - 330];
 
 function hoveringClick() {
-    if (hoveringOn === "Play" && scene === "Menu") {
+    if (hoveringOn.Play && scene === "Menu") {
         play();
-    } else if (hoveringOn === "Menu" && bird.dead) {
+    } else if (hoveringOn.Menu && bird.dead) {
         menu();
-    } else if (hoveringOn === "Shop" && scene === "Menu") {
+    } else if (hoveringOn.Shop && scene === "Menu") {
         shop();
-    } else if (hoveringOn === "Highscore" && scene === "Menu") {
+    } else if (hoveringOn.Highscore && scene === "Menu") {
         leaderboard();
-    } else if (hoveringOn === "Playagain" && bird.dead) {
+    } else if (hoveringOn.Playagain && bird.dead) {
         playAgain();
     } else {
 
@@ -84,9 +91,10 @@ class Button {
         let { x, y, w, h, r, color, hoverColor, art, btnName } = this;
         if (mouseX >= x && mouseX <= x + w &&
             mouseY >= y && mouseY <= y + h) {
-            hoveringOn = btnName;
+            hoveringOn[btnName] = true;
             currentColor = hoverColor;
         } else {
+            hoveringOn[btnName] = false;
             currentColor = color;
         }
 
@@ -165,7 +173,8 @@ let scene = "Menu";
 let boxY = 700;
 let animVelocity = -5;
 let pipeVelocity = -5;
-let selectedBird = "ogFlappy1";
+let birdSprite = "1";
+let selectedBird = "flappy";
 let upperPipesArr = [];
 let lowerPipesArr = [];
 let bird = {
@@ -179,11 +188,11 @@ let bird = {
         if (action.key === " ") {
             this.velocity = -150;
             this.angle = (-Math.PI / 50); 
-            selectedBird = "ogFlappy2";
+            birdSprite = `2`;
         }
     },
-    w: (PIXEL_ARTS['ogFlappy'][0][0][8].length * 3),
-    h: (PIXEL_ARTS['ogFlappy'][0][0].length * 3),
+    w: (PIXEL_ARTS[selectedBird][0][0][8].length * 3),
+    h: (PIXEL_ARTS[selectedBird][0][0].length * 3),
     render: function () {
         this.velocity = this.velocity + (GRAVITY * (1 / 20)); // v = u + at updated per 2 frames
         this.y += (this.velocity * (1 / 20)) + (0.5 * GRAVITY * (1 / 20)**2); // s = ut + 1/2at^(2)
@@ -194,7 +203,7 @@ let bird = {
             window.addEventListener("keyup", () => {
                 window.setTimeout(() => {
                     this.angle = 0; 
-                    selectedBird = "ogFlappy1"; 
+                    birdSprite = `1`; 
                 }, 150);
             });
            
@@ -206,7 +215,8 @@ let bird = {
         ctx.save();
         ctx.translate(this.x, this.y);
         ctx.rotate(this.angle);
-        cachedRender({ x: 0, y: 0 }, selectedBird);
+        cachedRender({ x: 0, y: 0 }, selectedBird + birdSprite);
+
         ctx.restore();
     }
 }
@@ -217,12 +227,12 @@ prerender("pipeUpper", PIXEL_ARTS.pipe[0], PIXEL_ARTS.pipe[1], 3);
 prerender("pipeUpper2", PIXEL_ARTS.pipe[0], PIXEL_ARTS.pipe[1], 2);
 prerender("pipeLower", PIXEL_ARTS.pipeReverse, PIXEL_ARTS.pipe[1], 3);
 prerender("pipeLower2", PIXEL_ARTS.pipeReverse, PIXEL_ARTS.pipe[1], 2);
-prerender("flappy1", PIXEL_ARTS.flappy[0][0], PIXEL_ARTS.flappy[1], 3);
-prerender("flappy2", PIXEL_ARTS.flappy[0][1], PIXEL_ARTS.flappy[1], 3);
+prerender("flappy1", PIXEL_ARTS.flappy[0][0], PIXEL_ARTS.flappy[1], 4);
+prerender("flappy2", PIXEL_ARTS.flappy[0][1], PIXEL_ARTS.flappy[1], 4);
 prerender("ogFlappy1", PIXEL_ARTS.ogFlappy[0][0], PIXEL_ARTS.ogFlappy[1], 4);
 prerender("ogFlappy2", PIXEL_ARTS.ogFlappy[0][1], PIXEL_ARTS.ogFlappy[1], 4);
-prerender("grayWolf1", PIXEL_ARTS.grayWolf[0][0], PIXEL_ARTS.grayWolf[1], 3);
-prerender("grayWolf2", PIXEL_ARTS.grayWolf[0][1], PIXEL_ARTS.grayWolf[1], 3);
+prerender("grayWolf1", PIXEL_ARTS.grayWolf[0][0], PIXEL_ARTS.grayWolf[1], 4);
+prerender("grayWolf2", PIXEL_ARTS.grayWolf[0][1], PIXEL_ARTS.grayWolf[1], 4);
 prerender("bg", PIXEL_ARTS.bg[0], PIXEL_ARTS.bg[1], 13);
 prerender("bg", PIXEL_ARTS.bg[0], PIXEL_ARTS.bg[1], 13);
 prerender("bg", PIXEL_ARTS.bg[0], PIXEL_ARTS.bg[1], 13);
@@ -254,38 +264,36 @@ function add_pipes() {
 }
 
 function death() {
-    if (bird.dead) {
-        bird.velocity += 5;
-        
-        pipeVelocity = 0;
-        animVelocity = 0;
+    // bird.velocity += 5;
     
-        window.clearInterval(pipeSpam);
-    
-        if (boxY >= 130) {
-            boxY -= 15;
-        }
-        
-        if (score > bestscore) {
-            bestscore = score;
-        }
-    
-    
-        ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-        ctx.fillRect(150, boxY, 300, 350);
-        
-        ctx.fillStyle = "white"
-        ctx.font = "0.85rem 'Press Start 2P', system-ui";
-        ctx.fillText("BEST: " + bestscore, 300, boxY + 70);
-        ctx.fillText("SCORE: " + score, 300, boxY + 100);
-    
-        
-        render({x: 250, y: boxY + 120, size: 4}, PIXEL_ARTS.ogFlappy[0][0], PIXEL_ARTS.ogFlappy[1]);
-    
-    
-        PLAYAGAINBTN.render();
-        MENUBTN.render();
+    pipeVelocity = 0;
+    animVelocity = 0;
+
+    window.clearInterval(pipeSpam);
+
+    if (boxY >= 130) {
+        boxY -= 15;
     }
+    
+    if (score > bestscore) {
+        bestscore = score;
+    }
+
+
+    ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+    ctx.fillRect(150, boxY, 300, 350);
+    
+    ctx.fillStyle = "white"
+    ctx.font = "0.85rem 'Press Start 2P', system-ui";
+    ctx.fillText("BEST: " + bestscore, 300, boxY + 70);
+    ctx.fillText("SCORE: " + score, 300, boxY + 100);
+
+    
+    render({x: 250, y: boxY + 120, size: 4}, PIXEL_ARTS[selectedBird][0][0], PIXEL_ARTS[selectedBird][1]);
+
+
+    PLAYAGAINBTN.render();
+    MENUBTN.render();
 }
 
 let menuLoop;
