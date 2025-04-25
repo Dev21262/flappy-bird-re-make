@@ -1,0 +1,46 @@
+export const pinkFlappy = [
+    [   
+        [   
+            "        bbbb  ",
+            "      bbrrrrbbb",
+            "    bbrrrrrbwwwb",
+            "   bzzzyyyybzwwwb",
+            "  byyyyyyyybzwwbwb",
+            "  byyyyyyyybzwwbwb",
+            "  byyyyyyyybzwwbwb",
+            "  byyyyyyyyybzwwwb",
+            " bbbbbbyyyyybbbbbbb",
+            "byzzzyybyyybrrrrrrrb",
+            "bzzzzybooobrrbbbbrrb",
+            "bzzzybooooobrrrrrrb",
+            " bbbbboooooobbbbbb",
+            "     bbbbbbb",
+        ],
+        [   
+            "        bbbb  ",
+            "      bbrrrrbbb",
+            "    bbrrrrrbwwwb",
+            "   bzzzyyyybzwwwb",
+            "  byyyyyyyybzwwbwb",
+            "  byyyyyyyybzwwbwb",
+            " bbbbbyyyyybzwwbwb",
+            "bwwwwwbyyyyybzwwwb",
+            "bbbbbbbyyyyybbbbbbb",
+            "bzwwwbyyyyybrrrrrrrb",
+            " bbooooooobrrbbbbrrb",
+            "  boooooooobrrrrrrb",
+            "  bbbooooooobbbbbb",
+            "     bbbbbbb",
+        ],
+    ],
+    {
+        "y": "#F48FB1",
+        "b": "#533846",
+        "c": "#e6e617",
+        "w": "#FFFFFF",
+        "r": "#FC3D12",
+        "e": "#4d6a7c",
+        "z": "#FCE4EC",
+        "o": "#F06292"
+    }
+]
