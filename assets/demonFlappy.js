@@ -1,0 +1,46 @@
+export const demonFlappy = [
+    [   
+        [   
+            "      bb   bb",
+            "     bbbbbbbbbb",
+            "    bzzzyyybwwwb",
+            "   bzyyyyyybzwwwb",
+            "  byyyyyyyybzwwbwb",
+            "  byyyyyyyybzwwbwb",
+            "  byyyyyyyybzwwbwb",
+            "  byyyyyyyyybzwwwb",
+            " bbbbbbyyyyybbbbbbb",
+            "byzzzyybyyybrrrrrrrb",
+            "bzzzzybooobrrbbbbbb",
+            "bzzzybooooobrrrrrrb",
+            " bbbbboooooobbbbbb",
+            "     bbbbbbb",
+        ],
+        [   
+            "      bb   bb",
+            "     bbbbbbbbbb",
+            "    bzzzyyybwwwb",
+            "   bzyyyyyybzwwwb",
+            "  byyyyyyyybzwwbwb",
+            "  byyyyyyyybzwwbwb",
+            "  byyyyyyyybzwwbwb",
+            "  byyyyyyyyybzwwwb",
+            " bbbbbyyyyyybbbbbbb",
+            "bzzzzzbyyyybrrrrrrrb",
+            "byzzzybooobrrbbbbbb",
+            " byyybooooobrrrrrrb",
+            " bbbbooooooobbbbbb",
+            "     bbbbbbb",
+        ],
+    ],
+    {
+        "y": "#D54545",
+        "b": "#6D1919",
+        "c": "#e6e617",
+        "w": "#DDE2B1",
+        "r": "#D54545",
+        "e": "#4d6a7c",
+        "z": "#D54545",
+        "o": "#D54545"
+    }
+]
