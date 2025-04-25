@@ -1,0 +1,48 @@
+export const roboFlappy = [
+    [   
+        [   
+            "       bbbb",
+            "        bb",
+            "    bbbbbbbbbbbbb",
+            "   bzzzzzzzzzzzzb",
+            "   byyyyydyybbbbb",
+            "  bbbbbbyyyybwbwb",
+            "  bwwwwbyyyybwbwb",
+            "  bwwwwbyyyybwwwb",
+            "  bzzzzbyyyybbbbbbbbb",
+            "  bbbbbbyyyyybrrrrrrb",
+            "  byyyyyyyyyybbbbbbbb",
+            "  byyyyyyydyybrrrrrrb",
+            "   beeeeeeeeebbbbbbbb",
+            "    bbbbbbbbbb",
+            "     bbbbbbbb",
+        ],
+        [   
+            "       bbbb",
+            "        bb",
+            "    bbbbbbbbbbbbb",
+            "   bzzzzzzzzzzzzb",
+            "   byyyyydyybbbbb",
+            "  byydyyyyyybwbwb",
+            "  byyyyyyyyybwbwb",
+            "  bbbbbbyyyybwwwb",
+            "  bzzzzbyyyybbbbbbbbb",
+            "  bbbbbbyyyyybrrrrrrb",
+            "  byyyyyyyyyybbbbbbbb",
+            "  byyyyyyydyybrrrrrrb",
+            "   beeeeeeeeebbbbbbbb",
+            "    bbbbbbbbbb",
+            "     bbbbbbbb",
+        ],
+    ],
+    {
+        "y": "#7EA8D9",
+        "b": "#00060A",
+        "d": "#060B13",
+        "w": "#FFFFFF",
+        "r": "#FFFE02",
+        "e": "#648FBC",
+        "z": "#9FC6EF",
+        "o": "#E48116"
+    }
+]
