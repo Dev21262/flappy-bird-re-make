@@ -19,6 +19,7 @@ import { tekno } from "./assets/tekno.js";
 import { dominic } from "./assets/dominic.js";
 
 
+
 const width = 600;
 const height = 600;
 const maxWidth = window.innerWidth;
@@ -41,7 +42,7 @@ const reverseArr = (array) => {
 
 let mouseX = 0;
 let mouseY = 0;
-let selectedBird = "dominic";
+let selectedBird = "flappy";
 let hoveringOn = {
     Play: false,
     Menu: false,
@@ -116,6 +117,11 @@ let highscores = [
         bird: "birdo"
     }, 
     {
+        score: 5,
+        name: "ASBackup",
+        bird: "quirky"
+    },
+    {
         score: 46,
         name: "ephremkhsap",
         bird: "brave"
@@ -125,6 +131,11 @@ let highscores = [
         name: "saga :P",
         bird: "flappy"
     }, 
+    {
+        score: 18,
+        name: "CodeSprite",
+        bird: "dominic"
+    },
     {
         score: 6,
         name: "dalegomango",
@@ -198,7 +209,6 @@ class Button {
         if (mouseX >= x && mouseX <= x + w &&
             mouseY >= y && mouseY <= y + h && scene !== btnName) {
             hoveringOn[btnName] = true;
-            console.log(btnName)
             currentColor = hoverColor;
         } else {
             hoveringOn[btnName] = false;
@@ -367,7 +377,6 @@ let bird = {
     },
 
     render: function () {
-        console.log(this.w);
         this.velocity = this.velocity + (GRAVITY * (1 / 20)); // v = u + at updated per 2 frames
         this.y += (this.velocity * (1 / 20)) + (0.5 * GRAVITY * (1 / 20)**2); // s = ut + 1/2at^(2)
 
@@ -793,6 +802,4 @@ function playAgain() {
     pipeSpam = window.setInterval(add_pipes, 2000);
     playLoop = requestAnimationFrame(play);
 }
-
-// menu();
-shop();
+menu();
