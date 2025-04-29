@@ -19,7 +19,6 @@ import { tekno } from "./assets/tekno.js";
 import { dominic } from "./assets/dominic.js";
 
 
-
 const width = 600;
 const height = 600;
 const maxWidth = window.innerWidth;
@@ -117,9 +116,24 @@ let highscores = [
         bird: "birdo"
     }, 
     {
-        score: 5,
+        score: 9,
         name: "ASBackup",
         bird: "quirky"
+    },
+    {
+        score: 13,
+        name: "Chris Yang!",
+        bird: "flappy"
+    },
+    {
+        score: 7,
+        name: "I'M BOB",
+        bird: "basketballFlappy"
+    },
+    {
+        score: 6,
+        name: "Leo2009",
+        bird: "basketballFlappy"
     },
     {
         score: 46,
