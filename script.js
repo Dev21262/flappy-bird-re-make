@@ -17,6 +17,7 @@ import { quirky } from "./assets/quirky.js";
 import { basketballFlappy } from "./assets/basketballFlappy.js";
 import { tekno } from "./assets/tekno.js";
 import { dominic } from "./assets/dominic.js";
+import { duke } from "./assets/duke.js";
 
 
 const width = 600;
@@ -63,7 +64,8 @@ let cHoveringOn = {
     basketballFlappy: false,
     birdo: false,
     tekno: false,
-    dominic: false
+    dominic: false,
+    duke: false
 };
 
 let scrollDirection = null;
@@ -169,7 +171,7 @@ highscores = highscores.sort((a, b) => {
 
 
 const CACHED_PIXEL_ARTS = {};
-const PIXEL_ARTS = { pipe, playbtn, menubtn, leaderboardbtn, shopbtn, tekno, grayWolf, roboFlappy, flappy, ogFlappy, bg, christmasFlappy, pinkFlappy, brave, demonFlappy, birdo, quirky, basketballFlappy, dominic };
+const PIXEL_ARTS = { pipe, playbtn, menubtn, leaderboardbtn, shopbtn, tekno, grayWolf, roboFlappy, flappy, ogFlappy, bg, christmasFlappy, pinkFlappy, brave, demonFlappy, birdo, quirky, basketballFlappy, dominic, duke };
 PIXEL_ARTS.pipeReverse = reverseArr(PIXEL_ARTS.pipe[0]);
 
 /**Calculate height and width of upper pipe by multiplying no of horizontal and
@@ -287,6 +289,7 @@ const cBasketball = new Character({x: 195, y: 350, cname: "basketballFlappy"}, {
 const cBirdo = new Character({x: 350, y: 345, cname: "birdo"}, {txt: "Birdo", x: 360, y: 427}, "#CA0D0D");
 const cTekno = new Character({x: 495, y: 345, cname: "tekno"}, {txt: "Tekno", x: 510, y: 430}, "#C34C2A");
 const cDominic = new Character({x: 50, y: 450, cname: "dominic"}, {txt: "Dominic", x: 52, y: 525}, "#E4844E");
+const cDuke = new Character({x: 200, y: 450, cname: "duke"}, {txt: "Duke", x: 223, y: 525}, "#413948");
 
 
 const PLAYBTN = new Button(
@@ -383,11 +386,19 @@ let bird = {
         }
     },
     get w() {
-        return PIXEL_ARTS[selectedBird][0][0][0].length * 3;
+        if (selectedBird === "flappy" || selectedBird === "grayWolf") {
+            return PIXEL_ARTS[selectedBird][0][0][0].length * 3;
+        } else {
+            return PIXEL_ARTS[selectedBird][0][0][0].length * 4;
+        }
     },
 
     get h() {
-        return ((PIXEL_ARTS[selectedBird][0][0].length - 2)  * 3)
+        if (selectedBird === "flappy" || selectedBird === "grayWolf") {
+            return ((PIXEL_ARTS[selectedBird][0][0].length)  * 3)
+        } else {
+            return ((PIXEL_ARTS[selectedBird][0][0].length)  * 4)
+        }
     },
 
     render: function () {
@@ -484,6 +495,9 @@ function efficient() {
 
     prerender("dominic1", PIXEL_ARTS.dominic[0][0], PIXEL_ARTS.dominic[1], 4);
     prerender("dominic2", PIXEL_ARTS.dominic[0][1], PIXEL_ARTS.dominic[1], 4);
+
+    prerender("duke1", PIXEL_ARTS.duke[0][0], PIXEL_ARTS.duke[1], 4);
+    prerender("duke2", PIXEL_ARTS.duke[0][1], PIXEL_ARTS.duke[1], 4);
 
 
     prerender("bg", PIXEL_ARTS.bg[0], PIXEL_ARTS.bg[1], 13);
@@ -653,6 +667,7 @@ function shop() {
     cBirdo.draw();
     cTekno.draw();
     cDominic.draw();
+    cDuke.draw();
 
 
 
